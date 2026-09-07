@@ -1,6 +1,10 @@
 name: GitHub Actions Demo
 run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
-on: [push]
+on:
+  push:
+  workflow_dispatch:
+  schedule:
+    - cron: '* * * * *'
 jobs:
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
@@ -15,4 +19,19 @@ jobs:
       - name: List files in the repository
         run: |
           ls ${{ github.workspace }}
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run job.py
+        env:
+          SECRET_API_TOKEN: ${{ secrets.SECRET_API_TOKEN }}
+        run: python job.py
+      - name: Write file
+        run: echo "contenu du fichier" > output.txt
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mon-artefact
+          path: output.txt
       - run: echo "🍏 This job's status is ${{ job.status }}."
