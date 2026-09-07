@@ -1,4 +1,4 @@
-name: Tests
+name: Tests Unitaires
 
 on: [push]
 
@@ -7,10 +7,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.14'
+          python-version: '3.11'
+
+      - name: Run tests
+        run: python -m unittest test_addition.py
+
+      - name: Install sshpass
+        run: sudo apt-get install -y sshpass
+
+      - name: Copy file via SCP
         env:
           SSH_PASSWORD: ${{secrets.SSH_PASSWORD}}
-      - run: python -m unittest -v
-      - run: sshpass -p "$SSH_PASSWORD" scp |
+        run: sshpass -p "$SSH_PASSWORD" scp -o StrictHostKeyChecking=no addition.py ubuntu@20.56.74.49:/home/ubuntu/MI
